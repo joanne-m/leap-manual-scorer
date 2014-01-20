@@ -1,0 +1,4 @@
+lib/
+bin/
+*.xlsx
+database.db
