@@ -2,6 +2,8 @@ package com.db;
 
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -14,6 +16,7 @@ import com.j256.ormlite.table.DatabaseTable;
 public class Speaker {
 	
 	// for QueryBuilder to be able to find the fields
+	public static final String SESSION_ID = "SessionID";
 	public static final String ID_FIELD = "SpeakerID";
 	public static final String NAME_FIELD = "SpeakerName";
 	public static final String AGE_FIELD = "SpeakerAge";
@@ -25,7 +28,7 @@ public class Speaker {
 	public static final String COMMENTS_FIELD = "SpeakerComments";
 	
 	@DatabaseField(id = true, columnName = ID_FIELD)
-	private Integer speakerId;
+	private String speakerId;
 	
 	@DatabaseField(columnName = NAME_FIELD, canBeNull = false)
 	private String name;
@@ -60,7 +63,7 @@ public class Speaker {
 
 	public Speaker(HashMap<String, String> speaker) {
 		// TODO Auto-generated constructor stub
-		this.speakerId = Integer.parseInt(speaker.get(ID_FIELD));
+		this.speakerId = (speaker.get(SESSION_ID)+"."+speaker.get(ID_FIELD));
 		this.name = speaker.get(NAME_FIELD);
 		this.age = Integer.parseInt(speaker.get(AGE_FIELD));
 		this.gender = speaker.get(GENDER_FIELD);
@@ -74,7 +77,7 @@ public class Speaker {
 	
 	public String[][] mapSpeakerInfo(){
 		String[][] speakerInfo = {
-				{ID_FIELD, this.speakerId.toString()},
+				{ID_FIELD, this.speakerId},
 				{NAME_FIELD, this.name},
 				{AGE_FIELD, this.age+""},
 				{GENDER_FIELD, this.gender},
@@ -87,12 +90,12 @@ public class Speaker {
 		return speakerInfo;
 	}
 
-	public Integer getSpeakerId() {
+	public String getSpeakerId() {
 		return speakerId;
 	}
 
 
-	public void setSpeakerId(Integer speakerId) {
+	public void setSpeakerId(String speakerId) {
 		this.speakerId = speakerId;
 	}
 

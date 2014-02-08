@@ -119,6 +119,7 @@ public class LogParser extends JMenuItem implements ActionListener{
 			while ((line = br.readLine()) != null) {
 				String[] property = line.split(cvsSplitBy);
 				if(property.length <2) break;
+				if (property[0].contains("SessionID")) property[0] = "SessionID";
 				map.put(property[0], property[1].replaceAll("^\"|\"$", "").trim());
 				//System.out.println("label= " + property[0] + " , value=" + property[1].replaceAll("^\"|\"$", "").trim() + "]");
 	 

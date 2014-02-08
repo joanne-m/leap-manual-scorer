@@ -4,7 +4,6 @@ package com;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
-import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,7 +17,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -46,8 +44,6 @@ public class ScoringPanel extends JFrame implements ActionListener{
 	private ButtonGroup scoregroup[];
 	private JRadioButton score[][];
 	private String[] scoreDesc = {Globals.PA, Globals.BF, Globals.UN};
-	private String submit_score1[];
-	
 	private Playback audio;
 	
 	private static DbManager db;
@@ -160,10 +156,11 @@ public class ScoringPanel extends JFrame implements ActionListener{
         prev.addActionListener( new ActionListener(){
             public void actionPerformed(ActionEvent ae) {
             	
-            		//play.setEnabled(false);
-            			db.getPrevToScore();
-            			updateScoringPanel(true);
-    	            //play.setEnabled(true);
+            	//play.setEnabled(false);
+            	submitScore(false);
+            	db.getPrevToScore();
+            	updateScoringPanel(true);
+    	        //play.setEnabled(true);
             	
 	            
             }
@@ -174,7 +171,7 @@ public class ScoringPanel extends JFrame implements ActionListener{
             public void actionPerformed(ActionEvent ae) {
             	try{
             		//play.setEnabled(false);
-            		if(submitScore()){
+            		if(submitScore(true)){
             			db.getNextToScore();
             			updateScoringPanel(true);
                     	
@@ -293,7 +290,7 @@ public class ScoringPanel extends JFrame implements ActionListener{
 		
 	}
 	
-	private boolean submitScore(){
+	private boolean submitScore(boolean next){
 		//submit_score1 = new String[score.length];
 		//System.out.println("Submitscore"+db.current_score.getScores().toString());
 		HashMap<String, Float> submit_score = new HashMap<>();
@@ -305,10 +302,11 @@ public class ScoringPanel extends JFrame implements ActionListener{
 				}				
 			}
 			if(!submit_score.containsKey(scoreDesc[i])) {
-				errormsg.setText("Please enter score for all categories.");
+				if (next) errormsg.setText("Please enter score for all categories.");
 				return false;
 			}
 		}
+		
 		if (db.current_score ==null || !submit_score.equals(db.current_score.getScores())){
 			//System.out.println("Submitting score...");
 			try{

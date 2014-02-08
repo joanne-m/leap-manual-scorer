@@ -51,7 +51,7 @@ public class Export {
 		db.setUser(username, Globals.DISREGARDIFNOTEXISTING);
 		List<Speaker> speakerList = db.getScoredSpeakers(username);
 		if(speakerList.isEmpty()) {
-			System.out.println("No stored scores for user "+username);
+			JOptionPane.showMessageDialog(null, "No stored scores for user "+username);
 			return;
 		}
 		for (Iterator<Speaker> iterator = speakerList.iterator(); iterator.hasNext();) {

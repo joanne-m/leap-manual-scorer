@@ -27,15 +27,9 @@ public class DbManager {
 	public static Dao<Score, Integer> scoreDao;
 	
 	
-
-	
-	
-	
 	static List<Recording> recordingList;
 	static List<Score> scoreList;
 
-	private ListIterator<Recording> iterator;
-	
 	private User current_user;
 	public int total;
 	public int counter;
@@ -336,7 +330,7 @@ public List<Speaker> getScoredSpeakers(String username) throws SQLException{
 
 public GenericRawResults<String[]> getScores(Speaker speaker) throws SQLException{
 	GenericRawResults<String[]> rawResults =
-			  scoreDao.queryRaw("select filename, text, score_pa, score_bf, score_un from scores inner join recordings using (recording_id) inner join questions using (question_id) where user_id = "+current_user.getUserId()+" and speaker_id = "+speaker.getSpeakerId());
+			  scoreDao.queryRaw("select filename, text, score_pa, score_bf, score_un from scores inner join recordings using (recording_id) inner join questions using (question_id) where user_id = "+current_user.getUserId()+" and speaker_id = '"+new SelectArg(speaker.getSpeakerId()) + "'");
 	return rawResults;
 }
 
