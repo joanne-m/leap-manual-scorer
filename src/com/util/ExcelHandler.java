@@ -36,6 +36,11 @@ public class ExcelHandler {
 	
 	public void newSheet(String sheetname){
 		sheetname = WorkbookUtil.createSafeSheetName(sheetname);
+		int i = 0;
+		while (workbook.getSheet(sheetname) != null){
+			sheetname += i;
+			i++;
+		}
 		currSheet = workbook.createSheet(sheetname);
 		currRow = 0;
 	}
