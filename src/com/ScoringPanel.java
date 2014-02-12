@@ -107,16 +107,8 @@ public class ScoringPanel extends JFrame implements ActionListener{
         JPanel scoregrouppanel[] = new JPanel[scoreDesc.length];
         score = new JRadioButton[scoreDesc.length][];
         for(int i=0; i<scoreDesc.length; i++){
-        	int numScore = 3;
-        	double interval = 0.5;
-        	if (scoreDesc[i].equals(Globals.PA) || scoreDesc[i].equals(Globals.BF)){
-        		numScore = 5;
-        	}
-        	
-        	else if (scoreDesc[i].equals(Globals.UN)){
-        		numScore = 2;
-        		interval = 1;
-        	}
+        	int numScore = 5;
+        	double interval = 0.25;
         	score[i] = new JRadioButton[numScore];
         	scoregroup[i]  = new ButtonGroup();
         	scoregrouppanel[i] = new JPanel(new GridLayout(5,1));
@@ -125,9 +117,6 @@ public class ScoringPanel extends JFrame implements ActionListener{
         	for(int j = 0; j<numScore; j++){
         		score[i][j] = new JRadioButton(""+(j*interval));
         		scoregroup[i].add(score[i][j]);
-        		if (interval == 1 && j%2 ==1){
-        			scoregrouppanel[i].add(new JPanel()); //skip one grid
-        		}
         		scoregrouppanel[i].add(score[i][j]);
         	}
         	scorepanel.add(scoregrouppanel[i]);
@@ -272,18 +261,12 @@ public class ScoringPanel extends JFrame implements ActionListener{
 	private void setScore(HashMap<String, Float> scores){
 		Float scoreValue = new Float(0);
 		scorepanel.setVisible(true);
+		double interval = 0.25;
+		
 		for(int i=0; i<scoreDesc.length; i++){
-			double interval = 0.5;
-        	if (scoreDesc[i].equals(Globals.PA)){
-        		scoreValue = scores.get(Globals.PA);
-        	}
-        	else if (scoreDesc[i].equals(Globals.BF)){
-        		scoreValue = scores.get(Globals.BF);
-        	}
-        	else if (scoreDesc[i].equals(Globals.UN)){
-        		interval = 1;
-        		scoreValue = scores.get(Globals.UN);
-        	}
+			
+			scoreValue = scores.get(scoreDesc[i]);
+			
         	score[i][(int) (scoreValue/interval)].setSelected(true);
 		}
 		
