@@ -22,6 +22,8 @@ public class Export {
 	static DbManager db;
 	
 	static String[] headers = {"WAV File", "Question Text", "Pronunciation & Articulation", "Blending & Fluency", "Understanding"};
+	private static int[] columnWidth;
+	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		try {
@@ -54,6 +56,7 @@ public class Export {
 			JOptionPane.showMessageDialog(null, "No stored scores for user "+username);
 			return;
 		}
+		columnWidth = new int[]{30, 100, 20, 20, 20};
 		for (Iterator<Speaker> iterator = speakerList.iterator(); iterator.hasNext();) {
 			Speaker speaker = (Speaker) iterator.next();
 			createSheet(speaker);
@@ -69,7 +72,8 @@ public class Export {
 		
 		writeScores(speaker);
 		writeSpeakerInfo (speaker);
-		excel.autoColumnWidth();
+		excel.setColumnWidth(columnWidth);
+		excel.freezeHeaderRow();
 	}
 	
 	private static void writeScores(Speaker speaker){

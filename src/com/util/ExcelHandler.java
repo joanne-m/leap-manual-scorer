@@ -10,8 +10,12 @@ import java.util.Iterator;
 import javax.swing.JOptionPane;
 
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.WorkbookUtil;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -24,6 +28,7 @@ public class ExcelHandler {
 	private XSSFSheet currSheet;
 	private int currRow;
 	private int maxColumn;
+	private XSSFCellStyle style;
 	
 	private static DbManager db;
 	
@@ -32,6 +37,26 @@ public class ExcelHandler {
         this.filename = filename;
         //Create Workbook instance holding reference to .xlsx file
         workbook = new XSSFWorkbook();
+        
+        XSSFFont defaultFont= workbook.createFont();
+	    defaultFont.setFontHeightInPoints((short)10);
+	    defaultFont.setFontName("Arial");
+	    defaultFont.setColor(IndexedColors.BLACK.getIndex());
+	    defaultFont.setBold(false);
+	    defaultFont.setItalic(false);
+
+	    XSSFFont font= workbook.createFont();
+	    font.setFontHeightInPoints((short)10);
+	    font.setFontName("Arial");
+	    font.setColor(IndexedColors.WHITE.getIndex());
+	    font.setBold(true);
+	    font.setItalic(false);
+	    
+	    style = workbook.createCellStyle();
+	    style.setFillForegroundColor(IndexedColors.DARK_BLUE.getIndex());
+	    style.setFillPattern(CellStyle.SOLID_FOREGROUND);
+	    style.setAlignment(CellStyle.ALIGN_CENTER);
+	    style.setFont(font);
 	}
 	
 	public void newSheet(String sheetname){
@@ -60,14 +85,27 @@ public class ExcelHandler {
 			
 			if(data[i]!= null && data[i].matches("[-+]?\\d+(\\.\\d+)?")) cell.setCellValue(Double.parseDouble(data[i]));
 			else cell.setCellValue(data[i]);
+			
+			if (row.getRowNum() == 0) cell.setCellStyle(style);
 		}
 		currRow++;
+	}
+	
+	public void setColumnWidth(int[] columnWidth){
+		for (int i = 0; i < maxColumn; i++) {
+			if(i<columnWidth.length) currSheet.setColumnWidth(i, columnWidth[i]*256);
+			else currSheet.autoSizeColumn(i);
+		}
 	}
 	
 	public void autoColumnWidth(){
 		for (int i = 0; i < maxColumn; i++) {
 			currSheet.autoSizeColumn(i);
 		}
+	}
+	
+	public void freezeHeaderRow(){
+		currSheet.createFreezePane( 0, 1, 0, 1 );
 	}
 	
 	/*public RowClass getNextRow(){
