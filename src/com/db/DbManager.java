@@ -1,11 +1,15 @@
 package com.db;
 
+import java.io.File;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.concurrent.Callable;
+
+
 
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
@@ -16,6 +20,7 @@ import com.j256.ormlite.stmt.SelectArg;
 import com.j256.ormlite.stmt.StatementBuilder;
 import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.table.TableUtils;
+import com.util.CSVHelper;
 import com.util.Globals;
 
 public class DbManager {
@@ -78,12 +83,27 @@ public class DbManager {
 			TableUtils.createTableIfNotExists(connectionSource, User.class);
 			TableUtils.createTableIfNotExists(connectionSource, Speaker.class);
 			TableUtils.createTableIfNotExists(connectionSource, Question.class);
+			if (questionDao.countOf() == 0){				
+				final List<Question> questionsToInsert = CSVHelper.importToList(new File(Globals.IMPORT_QUESTIONS_URL), Question.class);
+				questionDao.callBatchTasks(new Callable<Void>() {
+				    public Void call() throws Exception {
+				        for (Question question : questionsToInsert) {
+				        	questionDao.createOrUpdate(question);
+				        }
+				        return null;
+				    }
+				});
+			}
 			TableUtils.createTableIfNotExists(connectionSource, Recording.class);
 			TableUtils.createTableIfNotExists(connectionSource, Score.class);
 			
 			System.out.println("Database setup complete");
 		} catch (SQLException e) {
 			System.out.println("Failed to complete database setup."+e);
+			e.printStackTrace();
+		} catch (Exception e) {
+				// TODO Auto-generated catch block
+				System.out.println("Failed to initialize database."+e);
 		} finally {
 			if (connectionSource != null) {
 				try {
@@ -137,6 +157,35 @@ public class DbManager {
 		}catch(SQLException e){
 			e.printStackTrace();
 		}
+	}
+	
+	public void updateDatabase(List<Speaker> speakerList){
+		try{
+			for (Iterator iterator = speakerList.iterator(); iterator.hasNext();) {
+				Speaker speaker = (Speaker) iterator.next();
+				speakerDao.createOrUpdate(speaker);
+			}
+		}catch (SQLException e){
+			e.printStackTrace();
+		}
+	}
+	
+	public boolean updateDatabase(String path, String filename, int questionId, String speakerId) {
+		// TODO Auto-generated method stub
+
+		try{
+			Question q = questionDao.queryForId(questionId);
+			
+			List<Speaker> speakerList = speakerDao.queryForEq(Speaker.ID_FIELD, speakerId);
+			Speaker speaker = speakerList.get(0);
+			if(q != null && speaker != null) {
+				newRecordingEntry(path, filename, q, speaker);
+				return true;
+			}
+		}catch(SQLException e){
+			e.printStackTrace();
+		}
+		return false;
 	}
 	
 private void newRecordingEntry(String path, String filename, Question question, Speaker speaker) throws SQLException{

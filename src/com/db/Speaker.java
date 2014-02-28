@@ -36,10 +36,10 @@ public class Speaker {
 	@DatabaseField(columnName = AGE_FIELD, canBeNull = false)
 	private int age;
 	
-	@DatabaseField(columnName = GENDER_FIELD, canBeNull = false)
+	@DatabaseField(columnName = GENDER_FIELD)
 	private String gender;
 	
-	@DatabaseField(columnName = DIALECT_FIELD, canBeNull = false)
+	@DatabaseField(columnName = DIALECT_FIELD)
 	private String dialect;
 	
 	@DatabaseField(columnName = MOTHER_DIALECT_FIELD)
@@ -63,9 +63,15 @@ public class Speaker {
 
 	public Speaker(HashMap<String, String> speaker) {
 		// TODO Auto-generated constructor stub
-		this.speakerId = (speaker.get(SESSION_ID)+"."+speaker.get(ID_FIELD));
+		if(speaker.containsKey(SESSION_ID)) this.speakerId = (speaker.get(SESSION_ID)+"."+speaker.get(ID_FIELD));
+		else this.speakerId = speaker.get(ID_FIELD);
+				
 		this.name = speaker.get(NAME_FIELD);
-		this.age = Integer.parseInt(speaker.get(AGE_FIELD));
+		
+		if(speaker.containsKey(AGE_FIELD) && !speaker.get(AGE_FIELD).equalsIgnoreCase("NULL"))
+			this.age = Integer.parseInt(speaker.get(AGE_FIELD));
+		else this.age = 0;
+		
 		this.gender = speaker.get(GENDER_FIELD);
 		this.dialect = speaker.get(DIALECT_FIELD);
 		this.motherDialect = speaker.get(MOTHER_DIALECT_FIELD);
@@ -73,6 +79,7 @@ public class Speaker {
 		this.profession = speaker.get(PROFESSION_FIELD);
 		this.comment = speaker.get(COMMENTS_FIELD);
 		
+		//System.out.println(this.speakerId+" "+this.name+" "+this.age+" "+this.gender+" "+this.dialect+" "+this.motherDialect+" "+this.fatherDialect+" "+this.profession);
 	}
 	
 	public String[][] mapSpeakerInfo(){

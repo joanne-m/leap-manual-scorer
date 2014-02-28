@@ -2,3 +2,5 @@ lib/
 bin/
 *.xlsx
 database.db
+DATA/*
+database*.db

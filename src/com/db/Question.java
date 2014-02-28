@@ -1,6 +1,8 @@
 package com.db;
 
 
+import java.util.HashMap;
+
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
@@ -32,6 +34,12 @@ public class Question {
 	public Question(String question) {
 		// TODO Auto-generated constructor stub
 		this.text = question;
+	}
+	
+	public Question(HashMap<String, String> question) {
+		// TODO Auto-generated constructor stub
+		if(question.containsKey(ID_FIELD)) this.questionId = Integer.parseInt(question.get(ID_FIELD));
+		if (question.containsKey(TEXT_FIELD)) this.text = question.get(TEXT_FIELD);
 	}
 
 

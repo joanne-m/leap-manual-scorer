@@ -74,7 +74,20 @@ public class ScoringPanel extends JFrame implements ActionListener{
 				errormsg.setText("Loading...");
 			}
 		});
+		
+		WebParser importOnline = new WebParser(db);
+		importOnline.addActionListener(this);
+		importOnline.addDefaultActionListener();
+		importOnline.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				errormsg.setText("Loading...");
+			}
+		});
 		file.add(importLogs);
+		file.add(importOnline);
 		menu.add(file);
 		setJMenuBar(menu);
 		

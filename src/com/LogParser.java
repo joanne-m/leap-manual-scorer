@@ -32,7 +32,7 @@ public class LogParser extends JMenuItem implements ActionListener{
 	
 	public LogParser(DbManager db2){
 		this.db = db2;
-		setText("Import log files");
+		setText("Import log files (from rec tool)");
 		//addActionListener(this);
 		
 	}
