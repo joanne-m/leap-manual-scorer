@@ -262,8 +262,8 @@ public class ScoringPanel extends JFrame implements ActionListener{
 		}
 		else{
 			question.setText("No more recordings to score.");
-        	if (db.counter==db.total) rem.setText("Progress: "+(db.counter) +"/"+db.total);
-        	else rem.setText("Progress: "+(db.counter+1) +"/"+db.total);
+			if (db.counter <db.total) db.counter++;
+			rem.setText("Progress: "+(db.counter) +"/"+db.total);
     		play.setEnabled(false);
     		next.setEnabled(false);
     		scorepanel.setVisible(false);
