@@ -134,7 +134,8 @@ public class LogParser extends JMenuItem implements ActionListener{
 				String path = "";
 				if(!(split[0].equalsIgnoreCase(Globals.NO_RECORDING))) path = csvFile.getParent()+File.separator;
 				
-				String question = split[1].replaceAll("^\"|\"$", "").trim();
+				String question = split[1].substring(1, split[1].length()-1).trim();
+				System.out.println(split[1]);
 				db.updateDatabase(path, filename, question, speaker);
 			} while ((line = br.readLine()) != null);
 			

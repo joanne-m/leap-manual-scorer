@@ -56,7 +56,7 @@ public class Export {
 			JOptionPane.showMessageDialog(null, "No stored scores for user "+username);
 			return;
 		}
-		columnWidth = new int[]{30, 100, 20, 20, 20};
+		columnWidth = new int[]{25, 25, 20, 20, 20};
 		for (Iterator<Speaker> iterator = speakerList.iterator(); iterator.hasNext();) {
 			Speaker speaker = (Speaker) iterator.next();
 			createSheet(speaker);

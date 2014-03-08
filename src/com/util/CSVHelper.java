@@ -47,7 +47,7 @@ public class CSVHelper {
 				else{
 					String[] property = line.split(cvsSplitBy);
 					for (int i = 0; i < property.length; i++) {
-						if(label[i].equalsIgnoreCase("text")) map.put(label[i], property[i].replaceAll("^\"|\"$", "").replaceAll("\"\"", "\"").trim());
+						if(label[i].equalsIgnoreCase("text")) map.put(label[i], property[i].substring(1, property[i].length()-1).replaceAll("\"\"", "\"").trim());
 						else map.put(label[i], cleanText(property[i]));
 					}
 					instance.add(class1.getConstructor(HashMap.class).newInstance(map));

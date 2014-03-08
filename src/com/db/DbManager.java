@@ -11,6 +11,7 @@ import java.util.concurrent.Callable;
 
 
 
+
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.dao.GenericRawResults;
@@ -83,17 +84,6 @@ public class DbManager {
 			TableUtils.createTableIfNotExists(connectionSource, User.class);
 			TableUtils.createTableIfNotExists(connectionSource, Speaker.class);
 			TableUtils.createTableIfNotExists(connectionSource, Question.class);
-			if (questionDao.countOf() == 0){				
-				final List<Question> questionsToInsert = CSVHelper.importToList(new File(Globals.IMPORT_QUESTIONS_URL), Question.class);
-				questionDao.callBatchTasks(new Callable<Void>() {
-				    public Void call() throws Exception {
-				        for (Question question : questionsToInsert) {
-				        	questionDao.createOrUpdate(question);
-				        }
-				        return null;
-				    }
-				});
-			}
 			TableUtils.createTableIfNotExists(connectionSource, Recording.class);
 			TableUtils.createTableIfNotExists(connectionSource, Score.class);
 			
@@ -196,13 +186,34 @@ private void newRecordingEntry(String path, String filename, Question question, 
 		r.setQuestion(question);
 		r.setSpeaker(speaker);
 		
-		List<Recording> recordingList = recordingDao.queryForEq(Recording.FILENAME_FIELD, new SelectArg(filename));
+		QueryBuilder<Recording, Integer> recordingQb = recordingDao.queryBuilder();
+		List<Recording> recordingList = recordingQb.where().eq(Recording.SPEAKER_FIELD, speaker).and().eq(Recording.QUESTION_FIELD, question).query();
 		
 		if (recordingList.isEmpty()) {
 			recordingDao.createIfNotExists(r);
 		}
 		
 	}
+
+public void initQuestionsTable(){
+	try{
+		if (questionDao.countOf() == 0){				
+			final List<Question> questionsToInsert = CSVHelper.importToList(new File(Globals.IMPORT_QUESTIONS_URL), Question.class);
+			questionDao.callBatchTasks(new Callable<Void>() {
+			    public Void call() throws Exception {
+			        for (Question question : questionsToInsert) {
+			        	questionDao.createOrUpdate(question);
+			        }
+			        return null;
+			    }
+			});
+		}
+	}catch(SQLException e){
+		e.printStackTrace();
+	}catch (Exception e) {
+		e.printStackTrace();
+	}
+}
 
 private Question newQuestionEntry(Question q) throws SQLException{
 		
@@ -379,7 +390,7 @@ public List<Speaker> getScoredSpeakers(String username) throws SQLException{
 
 public GenericRawResults<String[]> getScores(Speaker speaker) throws SQLException{
 	GenericRawResults<String[]> rawResults =
-			  scoreDao.queryRaw("select filename, text, score_pa, score_bf, score_un from scores inner join recordings using (recording_id) inner join questions using (question_id) where user_id = "+current_user.getUserId()+" and speaker_id = '"+new SelectArg(speaker.getSpeakerId()) + "'");
+			  scoreDao.queryRaw("select filename, text, score_pa, score_bf, score_un from questions join recordings using (question_id) left join scores using (recording_id) where speaker_id = '"+new SelectArg(speaker.getSpeakerId()) + "' and (user_id = "+current_user.getUserId()+" or (user_id is null and filename = 'NOT_RECORDED'))");
 	return rawResults;
 }
 

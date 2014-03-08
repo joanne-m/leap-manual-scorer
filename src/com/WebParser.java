@@ -82,6 +82,7 @@ public class WebParser extends JMenuItem implements ActionListener{
 	      System.out.println("getSelectedFile() : " 
 	         +  chooser.getSelectedFile());
 	      parseSpeakerCsv(chooser.getSelectedFile().getAbsolutePath()+File.separator+"speakers.csv");
+	      db.initQuestionsTable();
 	      parseWavsInDir(chooser.getSelectedFile());
 	      
 	      }

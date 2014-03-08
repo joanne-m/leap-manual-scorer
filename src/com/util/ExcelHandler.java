@@ -28,7 +28,8 @@ public class ExcelHandler {
 	private XSSFSheet currSheet;
 	private int currRow;
 	private int maxColumn;
-	private XSSFCellStyle style;
+	private XSSFCellStyle headerStyle;
+	private XSSFCellStyle noRecStyle;
 	
 	private static DbManager db;
 	
@@ -38,25 +39,29 @@ public class ExcelHandler {
         //Create Workbook instance holding reference to .xlsx file
         workbook = new XSSFWorkbook();
         
-        XSSFFont defaultFont= workbook.createFont();
-	    defaultFont.setFontHeightInPoints((short)10);
-	    defaultFont.setFontName("Arial");
-	    defaultFont.setColor(IndexedColors.BLACK.getIndex());
-	    defaultFont.setBold(false);
-	    defaultFont.setItalic(false);
-
-	    XSSFFont font= workbook.createFont();
-	    font.setFontHeightInPoints((short)10);
-	    font.setFontName("Arial");
-	    font.setColor(IndexedColors.WHITE.getIndex());
-	    font.setBold(true);
-	    font.setItalic(false);
+        XSSFFont headerFont= workbook.createFont();
+	    headerFont.setFontHeightInPoints((short)10);
+	    headerFont.setFontName("Arial");
+	    headerFont.setColor(IndexedColors.WHITE.getIndex());
+	    headerFont.setBold(true);
+	    headerFont.setItalic(false);
 	    
-	    style = workbook.createCellStyle();
-	    style.setFillForegroundColor(IndexedColors.DARK_BLUE.getIndex());
-	    style.setFillPattern(CellStyle.SOLID_FOREGROUND);
-	    style.setAlignment(CellStyle.ALIGN_CENTER);
-	    style.setFont(font);
+	    headerStyle = workbook.createCellStyle();
+	    headerStyle.setFillForegroundColor(IndexedColors.DARK_BLUE.getIndex());
+	    headerStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
+	    headerStyle.setAlignment(CellStyle.ALIGN_CENTER);
+	    headerStyle.setFont(headerFont);
+	    
+	    XSSFFont noRecFont= workbook.createFont();
+	    noRecFont.setFontHeightInPoints((short)10);
+	    noRecFont.setFontName("Arial");
+	    noRecFont.setColor(IndexedColors.RED.getIndex());
+	    noRecFont.setBold(true);
+	    noRecFont.setItalic(false);
+	    
+	    noRecStyle = workbook.createCellStyle();
+	    noRecStyle.setFont(noRecFont);
+	    
 	}
 	
 	public void newSheet(String sheetname){
@@ -80,13 +85,17 @@ public class ExcelHandler {
 	public void writeRow (String[] data){
 		Row row = currSheet.createRow(currRow);
 		maxColumn = Math.max(maxColumn, data.length);
+		XSSFCellStyle currCellStyle= null;
+		if (row.getRowNum() == 0) currCellStyle = headerStyle;
+		else if(data[0] !=null && data[0].equals(Globals.NO_RECORDING)) currCellStyle = noRecStyle;
 		for(int i=0; i< data.length; i++){
 			Cell cell = row.createCell(i);
 			
 			if(data[i]!= null && data[i].matches("[-+]?\\d+(\\.\\d+)?")) cell.setCellValue(Double.parseDouble(data[i]));
 			else cell.setCellValue(data[i]);
 			
-			if (row.getRowNum() == 0) cell.setCellStyle(style);
+			cell.setCellStyle(currCellStyle);
+			
 		}
 		currRow++;
 	}
