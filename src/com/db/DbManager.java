@@ -12,6 +12,7 @@ import java.util.concurrent.Callable;
 
 
 
+
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.dao.GenericRawResults;
@@ -394,4 +395,22 @@ public GenericRawResults<String[]> getScores(Speaker speaker) throws SQLExceptio
 	return rawResults;
 }
 
+	public void importScores(String wavFilename, double score_pa, double score_bf) throws SQLException{
+		if(!wavFilename.equalsIgnoreCase(Globals.NO_RECORDING)){
+			List<Recording> rec = recordingDao.queryForEq(Recording.FILENAME_FIELD, wavFilename);
+			
+			if(!rec.isEmpty()){
+				Score s = new Score();
+				s.setRecording(rec.get(0));
+				s.setUser(current_user);
+				s.setScore_pron((float) score_pa);
+				s.setScore_blen((float)score_bf);
+				s.setScore_und(0);
+				
+				scoreDao.createOrUpdate(s);
+			}
+		}
+	//if filename != NOT_RECORDED {select recording_id from recordings where filename = wavfilename
+	//create score (recording_id, userid = 1, score_pa, score_bf, score_un = 0.0)
+	}
 }

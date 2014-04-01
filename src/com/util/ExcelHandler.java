@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Iterator;
 
 import javax.swing.JOptionPane;
@@ -16,6 +17,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.WorkbookUtil;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -115,6 +117,40 @@ public class ExcelHandler {
 	
 	public void freezeHeaderRow(){
 		currSheet.createFreezePane( 0, 1, 0, 1 );
+	}
+	
+	public static void parseResults(String filename, String username) throws IOException, SQLException{
+		FileInputStream fis = new FileInputStream(filename);
+		XSSFWorkbook w = new XSSFWorkbook(fis);
+		DbManager db = new DbManager();
+		db.setUser(username, Globals.CREATEIFNOTEXISTING);
+		for(int i=0; i<w.getNumberOfSheets(); i++){
+			XSSFSheet currSheet = w.getSheetAt(i);
+			System.out.println(i+currSheet.getSheetName());
+			int rowNum = 2;
+			XSSFRow currRow;
+			String wavFilename;
+			while((currRow = currSheet.getRow(rowNum)) != null){
+				wavFilename = currRow.getCell(0).getStringCellValue();
+				double score_pa = (currRow.getCell(4).getNumericCellValue())/2;
+				double score_bf = (currRow.getCell(5).getNumericCellValue())/2;
+				System.out.println(wavFilename+": "+score_pa +" "+score_bf);
+				db.importScores(wavFilename, score_pa, score_bf);
+				rowNum++;
+			}
+		}
+	}
+	
+	public static void main(String args[]){
+		try {
+			parseResults("test.xlsx", "alainandrew");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	/*public RowClass getNextRow(){
