@@ -50,7 +50,7 @@ public class Export {
 	public static void ExportUserScores(String username, DbManager database) throws Exception{
 		excel = new ExcelHandler("Manual Scoring ("+username +")");
 		db = database;
-		db.setUser(username, Globals.DISREGARDIFNOTEXISTING);
+		db.setCurrentUser(username, Globals.DISREGARDIFNOTEXISTING);
 		List<Speaker> speakerList = db.getScoredSpeakers(username);
 		if(speakerList.isEmpty()) {
 			JOptionPane.showMessageDialog(null, "No stored scores for user "+username);

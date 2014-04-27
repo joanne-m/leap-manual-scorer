@@ -15,6 +15,7 @@ import javax.sound.sampled.Clip;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.swing.JOptionPane;
 
 
 // To play sound using Clip, the process need to be alive.
@@ -54,6 +55,7 @@ public class Playback implements Runnable {
 			clip.close();
 		} catch (FileNotFoundException e) {
 			System.out.println("Unable to play audio file {}"+ filename+ e);
+			JOptionPane.showMessageDialog(null, "File not found: "+filename);
 		} catch (LineUnavailableException e) {
 			System.out.println("Unable to play audio file {}"+ filename+ e);
 		} catch (UnsupportedAudioFileException e) {

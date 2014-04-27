@@ -123,7 +123,7 @@ public class ExcelHandler {
 		FileInputStream fis = new FileInputStream(filename);
 		XSSFWorkbook w = new XSSFWorkbook(fis);
 		DbManager db = new DbManager();
-		db.setUser(username, Globals.CREATEIFNOTEXISTING);
+		db.setCurrentUser(username, Globals.CREATEIFNOTEXISTING);
 		for(int i=0; i<w.getNumberOfSheets(); i++){
 			XSSFSheet currSheet = w.getSheetAt(i);
 			System.out.println(i+currSheet.getSheetName());

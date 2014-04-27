@@ -57,7 +57,7 @@ public class ScoringPanel extends JFrame implements ActionListener{
 		while(username == null || username.isEmpty()){
 			username = JOptionPane.showInputDialog("Enter username:");
 		}
-		db.setUser(username, Globals.CREATEIFNOTEXISTING);
+		db.setCurrentUser(username, Globals.CREATEIFNOTEXISTING);
 		playpanel = new JPanel();
 		audio = new Playback();
 		
@@ -86,8 +86,24 @@ public class ScoringPanel extends JFrame implements ActionListener{
 				errormsg.setText("Loading...");
 			}
 		});
+		
+		AutoScorer autoScore = new AutoScorer();
+		autoScore.addActionListener(this);
+		autoScore.addDefaultActionListener();
+		autoScore.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				errormsg.setText("Generating automatic scores...");
+			}
+		});
+		
+		
 		file.add(importLogs);
 		file.add(importOnline);
+		file.addSeparator();
+		file.add(autoScore);
 		menu.add(file);
 		setJMenuBar(menu);
 		
@@ -299,6 +315,7 @@ public class ScoringPanel extends JFrame implements ActionListener{
 			}
 			if(!submit_score.containsKey(scoreDesc[i])) {
 				if (next) errormsg.setText("Please enter score for all categories.");
+				else errormsg.setText("");
 				return false;
 			}
 		}

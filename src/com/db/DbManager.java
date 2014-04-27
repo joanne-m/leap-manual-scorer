@@ -112,7 +112,7 @@ public class DbManager {
 		
 	}
 	
-	public void setUser(String username, int mode){
+	public void setCurrentUser(String username, int mode){
 		QueryBuilder<User, Integer> userQb = userDao.queryBuilder();
 		SelectArg username_arg = new SelectArg(username.toLowerCase());
 		List<User> userList;
@@ -133,7 +133,7 @@ public class DbManager {
 			e.printStackTrace();
 		}
 	}
-
+	
 	public void updateDatabase(String path, String filename, String question, Speaker speaker) {
 		// TODO Auto-generated method stub
 
@@ -283,6 +283,18 @@ public void initScoringPanel(){
 	
 }
 
+public void initScoringPanel(int counter){
+	try {
+		initIterator();
+		this.counter = counter;
+		if (!recordingList.isEmpty() && counter < total) updatePointers();
+	} catch (SQLException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	
+}
+
 public void getPrevToScore(){
 	try {
 		if(recordingList == null) initIterator();
@@ -376,7 +388,7 @@ public void submitScore(HashMap<String, Float> scores) throws SQLException{
 
 public List<Speaker> getScoredSpeakers(String username) throws SQLException{
 	List <Speaker> speakerList;
-	setUser(username, Globals.DISREGARDIFNOTEXISTING);
+	setCurrentUser(username, Globals.DISREGARDIFNOTEXISTING);
 	QueryBuilder<Speaker, Integer> speakerQb = speakerDao.queryBuilder();
 	QueryBuilder<Recording, Integer> recordingQb = recordingDao.queryBuilder();
 	QueryBuilder<Score, Integer> scoreQb = scoreDao.queryBuilder();
