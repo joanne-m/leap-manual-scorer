@@ -1,39 +1,26 @@
 package com;
 
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FilenameFilter;
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.swing.JButton;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 
 import com.db.DbManager;
 import com.db.Speaker;
 import com.util.CSVHelper;
-import com.util.Globals;
 
-public class WebParser extends JMenuItem implements ActionListener{
+public class WebParser extends JMenuItem{
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	private static DbManager db;
-	private static String read;
-	
 	private static Pattern p;
 	private static int counter;
 	
@@ -49,23 +36,18 @@ public class WebParser extends JMenuItem implements ActionListener{
 		this(db);
 	}
 	
-	public void addDefaultActionListener(){
-		addActionListener(this);
-	}
-	
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 		
 		db = new DbManager();
 		JFrame frame = new JFrame("Manual Scorer");
 		WebParser p = new WebParser();
-		p.addDefaultActionListener();
 		frame.getContentPane().add(p);
 		frame.setSize(400, 100);
 		frame.setVisible(true);
 		//parseLogsInDir(new File(Globals.LIB_URL));
-	}
+	}*/
 	
-	public void actionPerformed(ActionEvent e) {
+	public void start() {
 		counter = 0;
 	        
 	    JFileChooser chooser = new JFileChooser(); 

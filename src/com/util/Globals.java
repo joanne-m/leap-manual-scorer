@@ -13,4 +13,7 @@ public class Globals {
 	
 	public static int CREATEIFNOTEXISTING = 0;
 	public static int DISREGARDIFNOTEXISTING = 1;
+	public static final boolean INSTALLER = false; // set this to true before
+	// creating installer
+
 }

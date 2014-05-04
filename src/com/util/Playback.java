@@ -48,8 +48,12 @@ public class Playback implements Runnable {
 			clip.open(soundIn);
 			
 			clip.start();
-			while (!clip.isRunning())
+			int counter =0;
+			while (!clip.isRunning()){
 			    Thread.sleep(10);
+			    counter++;
+			    if (counter >50) throw new IOException("Cannot play audio file.");
+			}
 			while (clip.isRunning())
 			    Thread.sleep(10);
 			clip.close();
@@ -62,6 +66,7 @@ public class Playback implements Runnable {
 			System.out.println("Unable to play audio file {}"+ filename+ e);
 		} catch (IOException e) {
 			System.out.println("Unable to play audio file {}"+ filename+ e);
+			JOptionPane.showMessageDialog(null, "Unable to play audio file: "+filename);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

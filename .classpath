@@ -17,5 +17,6 @@
 	<classpathentry kind="lib" path="lib/poi-lib/log4j-1.2.13.jar"/>
 	<classpathentry kind="lib" path="lib/ormlite-core-4.48.jar"/>
 	<classpathentry kind="lib" path="lib/ormlite-jdbc-4.48.jar"/>
+	<classpathentry kind="lib" path="lib/flanagan.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

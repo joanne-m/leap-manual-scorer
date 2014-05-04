@@ -1,8 +1,6 @@
 package com;
 
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -11,18 +9,15 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.HashMap;
 
-import javax.swing.JButton;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 
 import com.db.DbManager;
 import com.db.Speaker;
 import com.util.Globals;
 
-public class LogParser extends JMenuItem implements ActionListener{
+public class LogParser extends JMenuItem{
 	/**
 	 * 
 	 */
@@ -41,10 +36,6 @@ public class LogParser extends JMenuItem implements ActionListener{
 		this(db);
 	}
 	
-	public void addDefaultActionListener(){
-		addActionListener(this);
-	}
-	
 	/*public static void main(String[] args) {
 		
 		db = new DbManager();
@@ -55,31 +46,6 @@ public class LogParser extends JMenuItem implements ActionListener{
 		frame.setVisible(true);
 		//parseLogsInDir(new File(Globals.LIB_URL));
 	}*/
-	
-	public void actionPerformed(ActionEvent e) {
-	    read = "Successfully imported the following files:";
-	        
-	    JFileChooser chooser = new JFileChooser(); 
-	    chooser.setCurrentDirectory(new java.io.File("."));
-	    chooser.setDialogTitle("Select directory containing log files");
-	    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-	    //
-	    // disable the "All files" option.
-	    //
-	    chooser.setAcceptAllFileFilterUsed(false);
-	    //    
-	    if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) { 
-	      //System.out.println("getCurrentDirectory(): " +  chooser.getCurrentDirectory());
-	      System.out.println("getSelectedFile() : " 
-	         +  chooser.getSelectedFile());
-	      parseLogsInDir(chooser.getSelectedFile());
-	      
-	      }
-	    else {
-	      System.out.println("No Selection ");
-	      }
-	    if(!read.equals("Successfully imported the following files:")) JOptionPane.showMessageDialog(null, read);
-	 }
 	
 	public static void parseLogsInDir(File dir){
 		
@@ -153,5 +119,31 @@ public class LogParser extends JMenuItem implements ActionListener{
 				}
 			}
 		}
+	}
+
+	public void start() {
+		// TODO Auto-generated method stub
+		read = "Successfully imported the following files:";
+        
+	    JFileChooser chooser = new JFileChooser(); 
+	    chooser.setCurrentDirectory(new java.io.File("."));
+	    chooser.setDialogTitle("Select directory containing log files");
+	    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+	    //
+	    // disable the "All files" option.
+	    //
+	    chooser.setAcceptAllFileFilterUsed(false);
+	    //    
+	    if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) { 
+	      //System.out.println("getCurrentDirectory(): " +  chooser.getCurrentDirectory());
+	      System.out.println("getSelectedFile() : " 
+	         +  chooser.getSelectedFile());
+	      parseLogsInDir(chooser.getSelectedFile());
+	      
+	      }
+	    else {
+	      System.out.println("No Selection ");
+	      }
+	    if(!read.equals("Successfully imported the following files:")) JOptionPane.showMessageDialog(null, read);
 	}
 }

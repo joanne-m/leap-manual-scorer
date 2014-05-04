@@ -7,6 +7,8 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.sql.SQLException;
 import java.util.HashMap;
 
@@ -17,16 +19,20 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JRadioButton;
 import javax.swing.JTextArea;
+import javax.swing.SwingWorker;
+import javax.swing.SwingWorker.StateValue;
 
 import com.db.DbManager;
 import com.util.Globals;
 import com.util.Playback;
 
-public class ScoringPanel extends JFrame implements ActionListener{
+public class ScoringPanel extends JFrame{
 	/**
 	 * 
 	 */
@@ -35,6 +41,7 @@ public class ScoringPanel extends JFrame implements ActionListener{
 	private JTextArea question;
 	private JButton play;
 	
+	private JProgressBar progress;
 	private JLabel errormsg;
 	private JButton prev;
 	private JButton next;
@@ -63,39 +70,92 @@ public class ScoringPanel extends JFrame implements ActionListener{
 		
 		JMenuBar menu = new JMenuBar();
 		JMenu file = new JMenu("File");
-		LogParser importLogs = new LogParser(db);
-		importLogs.addActionListener(this);
-		importLogs.addDefaultActionListener();
+		final LogParser importLogs = new LogParser(db);
 		importLogs.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
-				errormsg.setText("Loading...");
+				SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+
+					@Override
+					protected Void doInBackground() throws Exception {
+						// TODO Auto-generated method stub
+						importLogs.start();
+						return null;
+					}
+					
+					 @Override
+					 public void done() {
+						 refresh();
+					 }
+				};
+				
+				worker.execute();
 			}
 		});
 		
-		WebParser importOnline = new WebParser(db);
-		importOnline.addActionListener(this);
-		importOnline.addDefaultActionListener();
+		
+		final WebParser importOnline = new WebParser(db);
 		importOnline.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
-				errormsg.setText("Loading...");
+				SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+
+					@Override
+					protected Void doInBackground() throws Exception {
+						// TODO Auto-generated method stub
+						importOnline.start();
+						return null;
+					}
+					
+					 @Override
+					 public void done() {
+						 refresh();
+					 }
+				};
+				
+				worker.execute();
 			}
 		});
 		
-		AutoScorer autoScore = new AutoScorer();
-		autoScore.addActionListener(this);
-		autoScore.addDefaultActionListener();
-		autoScore.addActionListener(new ActionListener() {
+		JMenuItem autoScoreMenu = new JMenuItem("Generate automated scores");
+		autoScoreMenu.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
-				errormsg.setText("Generating automatic scores...");
+				AutoScorer autoScore = new AutoScorer();
+				autoScore.addPropertyChangeListener(new PropertyChangeListener() {
+				      @Override
+				      public void propertyChange(final PropertyChangeEvent event) {
+				    	 
+				    	  switch (event.getPropertyName()) {
+				    	  	case "progress":
+				    	  			progress.setIndeterminate(false);
+				    	  			progress.setValue((Integer) event.getNewValue());
+				    	  		break;
+				    	  	case "state":
+				    	          switch ((StateValue) event.getNewValue()) {
+				    	          case DONE:
+				    	            progress.setVisible(false);
+				    	            break;
+				    	          case STARTED:
+				    	        	  progress.setVisible(true);
+				    	        	  progress.setValue(0);
+						    		  progress.setStringPainted(true);
+						    		  progress.setString("Generating scores..");
+						    		  break;
+				    	          case PENDING:				    	            
+				    	          }
+				    	          break;
+				    	        }
+				    	  
+				      }
+				    });
+				autoScore.execute();
 			}
 		});
 		
@@ -103,7 +163,7 @@ public class ScoringPanel extends JFrame implements ActionListener{
 		file.add(importLogs);
 		file.add(importOnline);
 		file.addSeparator();
-		file.add(autoScore);
+		file.add(autoScoreMenu);
 		menu.add(file);
 		setJMenuBar(menu);
 		
@@ -154,18 +214,31 @@ public class ScoringPanel extends JFrame implements ActionListener{
         
         JButton export = new JButton("Export");
         export.addActionListener(new ActionListener() {
-			
-			@Override
+        	@Override
 			public void actionPerformed(ActionEvent arg0) {
-				try {
-					Export.ExportUserScores(username, db);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				// TODO Auto-generated method stub
+				SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+
+					@Override
+					protected Void doInBackground() throws Exception {
+						// TODO Auto-generated method stub
+						try {
+							Export.ExportUserScores(username, db);
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						return null;
+					}
+					
+				};
 				
+				worker.execute();
 			}
 		});
+        
+        progress = new JProgressBar();
+        progress.setVisible(false);
         
         errormsg = new JLabel("");
         errormsg.setForeground(Color.RED);
@@ -212,6 +285,7 @@ public class ScoringPanel extends JFrame implements ActionListener{
         bottom_left.add(export);
         
         JPanel bottom_right = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        bottom_right.add(progress);
         bottom_right.add(errormsg);
         bottom_right.add(prev);
         bottom_right.add(next);
@@ -339,8 +413,7 @@ public class ScoringPanel extends JFrame implements ActionListener{
 		return true;
 	}
 
-	@Override
-	public void actionPerformed(ActionEvent e) {
+	public void refresh() {
 		// TODO Auto-generated method stub
 		errormsg.setText("");
 		for (int i = 0; i < score.length; i++) {
